@@ -1,0 +1,4 @@
+*.tif
+.~lock.*
+*.csv#
+andrew/
