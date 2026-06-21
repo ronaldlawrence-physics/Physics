@@ -1,0 +1,4 @@
+Image,Count,Total_Area_um2,Avg_Area_um2,Min_Area_um2,Max_Area_um2,StdDev_um2,Avg_Circularity,Avg_Roundness,Avg_Solidity,Avg_Feret_um,Avg_Perimeter_um
+
+Plate_01_p1,1089177,32288725,29.6451,10.1761,1187.2097,25.4275,NaN,0.7718,0.8039,NaN,NaN
+
