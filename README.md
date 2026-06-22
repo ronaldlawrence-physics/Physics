@@ -18,8 +18,6 @@ Automated analysis of nuclear emulsion exposed to 124Xe+54 ions at about 300 MeV
 │       ├── gen_3d_stack.py    # 3D stack model renderer
 │       ├── report.tex         # LaTeX source (31 pages)
 │       └── report.pdf         # Compiled report
-├── Emulion Files /            # Raw TIFF images (per stack subdirectory)
-├── Ronald_Lawrence_Final_160626_eng.docx  # Report in Word format
 └── README.md
 ```
 
