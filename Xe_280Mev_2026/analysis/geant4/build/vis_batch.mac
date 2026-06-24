@@ -1,0 +1,20 @@
+/run/initialize
+
+# DAWNFILE - produces HepRep XML (can be viewed with HepRApp)
+/vis/open DAWNFILE
+/vis/viewer/set/background white
+/vis/viewer/set/viewpointThetaPhi 30 60
+/vis/viewer/zoom 1.5
+
+# Hide world
+/vis/geometry/set/visibility World 0 false
+
+# Draw volumes
+/vis/drawVolume
+
+# Add trajectories
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate 1
+
+# Run one event
+/run/beamOn 1

@@ -1,0 +1,3 @@
+/home/ronald/JINR/LHEP/Data/Xe_280Mev_2026/analysis/geant4/build/CMakeFiles/XeEmulsionSim.dir
+/home/ronald/JINR/LHEP/Data/Xe_280Mev_2026/analysis/geant4/build/CMakeFiles/edit_cache.dir
+/home/ronald/JINR/LHEP/Data/Xe_280Mev_2026/analysis/geant4/build/CMakeFiles/rebuild_cache.dir
