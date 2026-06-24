@@ -12,8 +12,7 @@
 
 \onehalfspacing
 
-\title{\textbf{Presentation guide for the Xe-124 emulsion experiment
-and Geant4 simulation}}
+\title{\textbf{Presentation guide for the Xe-124 emulsion experiment}}
 \author{Ronald Lawrence Jeyaseker}
 \date{June 2026}
 
@@ -28,7 +27,7 @@ and Geant4 simulation}}
 %===================================================================
 
 This document explains every step of the work, from the accelerator
-to the Geant4 simulation, so you can present it clearly. The overall
+to the final results, so you can present it clearly. The overall
 structure is:
 
 \begin{enumerate}
@@ -41,8 +40,8 @@ structure is:
   \item \textbf{Microscope scanning} --- Olympus BX63, ImageJ analysis.
   \item \textbf{Bragg curve and particle classification} --- the main
         experimental results.
-  \item \textbf{Geant4 simulation} --- computational model and results.
-  \item \textbf{Comparison} --- simulation vs experiment.
+  \item \textbf{SRIM simulation} --- computational model and comparison
+        with experiment.
   \item \textbf{Conclusions} --- what we learned.
 \end{enumerate}
 
@@ -423,83 +422,7 @@ The SRIM-predicted Bragg peak at 8--10\,mm is consistent with the
 experimental 10--12\,mm for Stack\,03. The agreement in the rise slope
 (plates 1--5) supports SRIM stopping power as a valid model.
 
-%===================================================================
-\section{Geant4 simulation (Sec.~4 in the Finalreport)}
-%===================================================================
 
-\subsection{Why Geant4?}
-
-SRIM models only electromagnetic stopping. Geant4 adds:
-\begin{itemize}
-  \item Nuclear fragmentation (production of secondary fragments)
-  \item Full 3D geometry with complex layer structures
-  \item Event-by-event physics with the \texttt{FTFP\_BERT} physics list
-\end{itemize}
-
-\subsection{Simulation setup}
-
-\subsubsection*{Geometry}
-\begin{itemize}
-  \item 10 plates, each: 60\,\si{\micro\meter} emulsion + 2\,mm glass
-  \item $40 \times 40$\,mm\textsuperscript{2} lateral size
-  \item Alternating orientation: E$|$G, G$|$E, E$|$G, G$|$E, ...
-  \item Beam enters from the top (positive Z), travels downward (-Z)
-\end{itemize}
-
-\subsubsection*{Beam}
-\begin{itemize}
-  \item \textsuperscript{124}Xe (Z=54, A=124)
-  \item 280\,MeV/nucleon $\times$ 124 = 34.72\,GeV total kinetic energy
-  \item 1000 events
-  \item Normal incidence, centred on stack
-\end{itemize}
-
-\subsubsection*{Physics list}
-\texttt{FTFP\_BERT}: Combines Fritiof (FTF) model for high-energy
-hadronic interactions + Bertini cascade for low-energy hadronic
-interactions + standard electromagnetic physics.
-
-\subsubsection*{Scoring}
-Custom \texttt{SteppingAction} records energy deposition per step per
-layer. \texttt{EventAction} accumulates per-event sums.
-\texttt{RunAction} writes the final average to CSV.
-
-\subsection{Simulation results}
-
-\begin{itemize}
-  \item \textbf{Bragg peak:} 9.3\,mm from entrance
-  \item \textbf{Peak dE/dx:} 5733\,MeV/mm (glass), 4969\,MeV/mm (emulsion)
-  \item \textbf{Total deposited:} 33,630\,MeV = 96.9\% of input
-  \item \textbf{3.1\% escapes} as secondary particles (neutrons,
-        gammas, fragments)
-  \item \textbf{Fragment tail:} $\sim$400\,MeV deposited past the
-        Bragg peak from light secondary fragments
-\end{itemize}
-
-\subsection{Comparison with experiment}
-
-\begin{itemize}
-  \item Geant4 peak at 9.3\,mm lies between Stack 01 (8--10\,mm)
-        and Stacks 02/03 (10--12\,mm)
-  \item Consistent with $\pm$5--10\% beam energy uncertainty
-  \item Normalised dE/dx curves agree well in shape
-  \item Fragment tail past the peak resembles experimental
-        post-peak activity
-\end{itemize}
-
-\subsection{Why 96.9\% and not 100\%?}
-
-At 280\,MeV/nucleon, the Xe nucleus can undergo nuclear interactions
-(fragmentation) in addition to electromagnetic stopping. When it
-fragments:
-\begin{itemize}
-  \item Some energy goes into nuclear binding (not visible as
-        ionization)
-  \item Neutrons escape without depositing energy (they're neutral)
-  \item Gamma rays from de-excitation escape
-  \item Some fragments exit the stack volume
-\end{itemize}
-The 96.9\% deposition fraction is physically reasonable.
 
 %===================================================================
 \section{How to explain the key figures}
@@ -558,41 +481,7 @@ Explain:
   \item This follows the abrasion-ablation model
 \end{itemize}
 
-\subsection{Figure: Geant4 Bragg curve (analysis/geant4/build/geant4\_bragg.png)}
 
-Four panels:
-\begin{itemize}
-  \item \textbf{Top-left:} dE/dx vs depth in absolute units (MeV/mm)
-        --- shows both emulsion and glass contributions
-  \item \textbf{Top-right:} Energy per layer --- glass dominates
-        because it's 33$\times$ thicker
-  \item \textbf{Bottom-left:} Normalised curve --- shape comparison
-  \item \textbf{Bottom-right:} Cumulative energy --- all 34.7\,GeV
-        accounted for
-\end{itemize}
-
-\subsection{Figure: Simulation vs experiment
-(analysis/geant4/build/geant4\_vs\_experiment.png)}
-
-\begin{itemize}
-  \item \textbf{Left panel:} All experimental curves normalised and
-        overlaid with Geant4. The shapes match well.
-  \item \textbf{Right panel:} Absolute comparison for Stack 03
-        (best statistics). Dual y-axes show different scales but
-        similar trends.
-\end{itemize}
-
-\subsection{Figure: 3D render (analysis/geant4/build/geant4\_render.png)}
-
-Shows the stack geometry with trajectories. Red lines = Xe ion
-paths. Point out:
-\begin{itemize}
-  \item Beam enters from top (positive Z)
-  \item Trajectories stop at the Bragg peak (bundle of red lines
-        terminating at $\sim$9\,mm depth)
-  \item No trajectories pass through the entire stack
-  \item Alternating blue (emulsion) and gray (glass) layers
-\end{itemize}
 
 %===================================================================
 \section{Key numbers to remember}
@@ -612,14 +501,10 @@ Bragg peak (exp, S01) & 8--10\,mm \\
 Bragg peak (exp, S02/03) & 10--12\,mm \\
 Bragg peak (SRIM) & 8.30\,mm & 5505\,MeV/mm \\
 Range (SRIM) & 11.55\,mm & End of plate~6 \\
-Bragg peak (Geant4) & 9.3\,mm \\
-Peak dE/dx (Geant4) & 5733\,MeV/mm (glass) \\
 Track density drop & 14--15$\times$ & At Bragg peak \\
 GMM classes & 3 & Sorted by mean area \\
 Per-cycle fluence & 188--605\,mm\textsuperscript{-2} & Varies by stack \\
 Beam FWHM & 10--15\,mm & Gaussian profile \\
-Geant4 events & 1000 & FTFP\_BERT physics \\
-Energy deposited (sim) & 96.9\% & 3.1\% escapes \\
 \bottomrule
 \end{tabular}
 
@@ -661,20 +546,7 @@ irradiation sessions (magnetic field uncertainty). The plate
 orientation (emulsion vs glass facing the beam) and possible
 glass thickness variations also contribute.
 
-\subsection*{Q: Why did you need Geant4 if you already had SRIM?}
-A: Both SRIM and Geant4 were run at the correct energy
-(280\,MeV/nucleon). SRIM gives a quick Bragg curve estimate (range
-11.55\,mm, peak at 8.30\,mm) but only models electromagnetic
-stopping. Geant4 adds nuclear fragmentation physics, showing that
-3.1\% of the energy escapes as secondary particles --- something
-SRIM cannot predict. The Geant4 peak (9.3\,mm) lies between the
-two experimental values, consistent with beam energy uncertainty.
 
-\subsection*{Q: Why does Geant4 show only 96.9\% energy deposition?}
-A: At 280\,MeV/nucleon, nuclear interactions produce secondary
-particles (neutrons, gammas) that can escape the stack without
-depositing energy. 3.1\% energy loss to escaping secondaries is
-physically reasonable.
 
 \subsection*{Q: What is the alternating plate orientation?}
 A: The plates in the stack are arranged such that the order of
