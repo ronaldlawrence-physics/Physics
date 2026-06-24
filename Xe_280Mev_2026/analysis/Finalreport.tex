@@ -33,7 +33,7 @@ nucleon at the JINR Nuclotron}}
 {\Huge \textbf{Automated analysis of nuclear emulsion exposed to
 ions \textsuperscript{124}Xe\textsuperscript{+54} at about 300\,MeV per
 nucleon at the JINR Nuclotron}}\\[1cm]
-\textbf{Student:} \\[1mm]
+\textbf{Student} \\[1mm]
 Ronald Lawrence Jeyaseker \\
 The American College \\
 Madurai \\
@@ -42,7 +42,7 @@ India
 
 \vspace{0.5cm}
 \begin{center}
-\textbf{Supervisors:} \\[2mm]
+\textbf{Supervisors} \\[2mm]
 Dr. Pavel Igorevich Zarubin \\
 Dr. Andrei Aleksandrovich Zaitsev \\
 Dr. Marimuthu Natarajan \\[1cm]
@@ -594,7 +594,7 @@ The following ImageJ functions were employed in the analysis pipeline:
 
 \begin{description}
   \item[Set Scale:] Calibration of pixel-to-micrometre conversion.
-        For Stack\,01, 1.717\,px/\si{\micro\meter} was used (determined from
+        For Stack\,01, the scale was set to 1.717\,\si{\micro\meter}/pixel (determined from
         a stage micrometre image), so the raw CSV values are in pixel
         units and must be divided by $1.717^2$ to obtain
         \si{\micro\meter\squared} for area. For Stacks\,02 and~03, the
@@ -620,7 +620,7 @@ The particle analysis filter was configured with:
 \begin{itemize}
   \item Size range: 10--1200\,px\textsuperscript{2}
         (approximately 3.4--410\,\si{\micro\meter\squared}
-        at 1.717\,px/\si{\micro\meter});
+        at 1.717\,\si{\micro\meter}/pixel);
   \item Circularity: 0.00--1.00 (no restriction);
   \item Output: ``Nothing'' (no outlines), with measurement results
         saved to a table.
@@ -718,7 +718,7 @@ steps:
         image dimensions are 40,000--60,000 pixels per side.
   \item \textbf{Scale calibration:} The pixel-to-micrometre conversion
         is set. For Stack\,01: \texttt{Set Scale... distance=1.717
-        known=1 pixel=1 unit=um}. For Stacks\,02 and~03, the images
+        known=1 pixel=1 unit=um}. For Stacks\,02 and~03, the images \\
         are already calibrated.
   \item \textbf{Contrast enhancement:} \texttt{Enhance Contrast
         saturated=0.35 normalize} normalises the histogram.
@@ -727,7 +727,7 @@ steps:
   \item \textbf{Convert to Mask:} Converts the threshold to a binary
         image.
   \item \textbf{Particle analysis:} \texttt{Analyze Particles
-        size=10-1200 circularity=0.00-1.00 show=Nothing display
+        size=10-1200 circularity=0.00-1.00 \\ show=Nothing display
         exclude include add} detects all connected components.
   \item \textbf{Result export:} Measurements are saved as CSV files.
 \end{enumerate}
