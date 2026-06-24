@@ -1,0 +1,718 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[margin=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{siunitx}
+\usepackage{xcolor}
+
+\onehalfspacing
+
+\title{\textbf{Presentation guide for the Xe-124 emulsion experiment
+and Geant4 simulation}}
+\author{Ronald Lawrence Jeyaseker}
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%===================================================================
+\section{Overview}
+%===================================================================
+
+This document explains every step of the work, from the accelerator
+to the Geant4 simulation, so you can present it clearly. The overall
+structure is:
+
+\begin{enumerate}
+  \item \textbf{NICA accelerator complex} --- how the Xe beam is produced
+        and delivered.
+  \item \textbf{Nuclear emulsion stacks} --- what they are and how they
+        detect particles.
+  \item \textbf{Irradiation} --- the three stacks and their exposure
+        conditions.
+  \item \textbf{Microscope scanning} --- Olympus BX63, ImageJ analysis.
+  \item \textbf{Bragg curve and particle classification} --- the main
+        experimental results.
+  \item \textbf{Geant4 simulation} --- computational model and results.
+  \item \textbf{Comparison} --- simulation vs experiment.
+  \item \textbf{Conclusions} --- what we learned.
+\end{enumerate}
+
+%===================================================================
+\section{The NICA accelerator complex (Sec.~1 in the Finalreport)}
+%===================================================================
+
+\subsection{What is NICA?}
+
+NICA (Nuclotron-based Ion Collider fAcility) is a megaproject at JINR
+in Dubna, Russia. It accelerates heavy ions (like xenon) for:
+\begin{itemize}
+  \item Nuclear physics (quark--gluon matter studies)
+  \item Applied research (radiation hardness of electronics, biology)
+\end{itemize}
+
+\subsection{Accelerator cascade}
+
+The beam goes through several stages:
+
+\begin{enumerate}
+  \item \textbf{ESIS/KRION-6T} (ion source): Produces highly charged
+        Xe\textsuperscript{+54} ions. Xenon gas is ionized by an
+        electron beam or electron string, stripping off 54 electrons.
+  \item \textbf{HILAC} (linear accelerator): Accelerates the ions to
+        3.2\,MeV/nucleon. A linear accelerator uses radio-frequency
+        cavities to push ions in a straight line.
+  \item \textbf{Booster synchrotron}: Accelerates to 600\,MeV/nucleon.
+        A synchrotron is a ring accelerator where magnetic fields
+        increase as the particles gain energy to keep them on a
+        circular orbit.
+  \item \textbf{Nuclotron}: The main ring (superconducting magnets).
+        Accelerates to the final energy. For this experiment:
+        $\sim$280\,MeV/nucleon for Xe-124.
+  \item \textbf{Extraction:} The beam is \emph{slowly extracted} over
+        several hundred milliseconds (a ``spill'') to the experimental
+        hall.
+\end{enumerate}
+
+\subsection{Key point for presentation:}
+
+280\,MeV/nucleon means each nucleon (proton or neutron) in the
+xenon nucleus has 280\,MeV of kinetic energy. For Xe-124 (124
+nucleons), the total kinetic energy is $280 \times 124 = 34720$\,MeV
+$\approx$ 34.7\,GeV. At this energy, the ions are relativistic:
+$\beta = v/c \approx 0.63$.
+
+%===================================================================
+\section{Nuclear emulsion (Sec.~2 in the Finalreport)}
+%===================================================================
+
+\subsection{What is nuclear emulsion?}
+
+Nuclear emulsion is similar to photographic film but much thicker and
+with a higher concentration of silver bromide (AgBr) crystals. When a
+charged particle passes through:
+\begin{enumerate}
+  \item It ionises the medium, creating ``latent image'' centres in
+        AgBr crystals along its path.
+  \item After chemical development, these crystals are reduced to
+        metallic silver grains --- visible as dark spots under a
+        microscope.
+\end{enumerate}
+
+\subsection{Key properties}
+
+\begin{itemize}
+  \item \textbf{Sub-micrometre resolution:} Can resolve individual
+        particle tracks.
+  \item \textbf{Integrating detector:} No power needed during
+        irradiation --- the emulsion records everything passively.
+  \item \textbf{3D information:} By scanning multiple plates, we
+        track particles in depth.
+  \item \textbf{Response:} The grain size (area of the silver cluster)
+        is proportional to the energy loss $dE/dx$ of the particle.
+        Heavily ionising particles (like the primary Xe) produce
+        larger grain clusters than light fragments.
+\end{itemize}
+
+\subsection{Plate structure}
+
+Each plate: 60\,\si{\micro\meter} emulsion on 2\,mm glass substrate.
+The glass provides mechanical support. The emulsion is \emph{single
+sided} (only one sensitive layer per plate).
+
+%===================================================================
+\section{The three stacks (Sec.~3 in the Finalreport)}
+%===================================================================
+
+Three stacks were irradiated in March 2026:
+
+\begin{tabular}{lcccc}
+\toprule
+Stack & Plates & Cycles & Entrance plate & Depth range \\
+\midrule
+Stack 01 & 8 & 1 & 1\_Plate\_09 & 0--14.5\,mm \\
+Stack 02 & 10 & 5 & 1\_Plate-0001 & 0--18.6\,mm \\
+Stack 03 & 10 & 10 & Plate\_01\_p1 & 0--18.6\,mm \\
+\bottomrule
+\end{tabular}
+
+\subsection{Why three stacks?}
+\begin{itemize}
+  \item Different numbers of exposure cycles (1, 5, 10) give different
+        beam fluences --- allows checking statistical effects.
+  \item Stack 01 has only 8 plates (shallower), Stacks 02/03 have 10
+        (deeper to catch more fragments).
+\end{itemize}
+
+\subsection{Depth scale}
+
+Depth of plate centre $i$ (0-indexed):
+\[
+d_i = i \times (0.06 + 2.0) + 0.03/2 = i \times 2.06 + 0.03\;\text{mm}
+\]
+
+\subsection{Plate orientation}
+
+The layer order within each plate alternates across the stack:
+\begin{center}
+Plate 1: E$|$G \quad
+Plate 2: G$|$E \quad
+Plate 3: E$|$G \quad
+Plate 4: G$|$E \quad
+... \quad
+Plate 10: G$|$E
+\end{center}
+
+This is important because when the beam hits glass first (plates 2, 4,
+6, 8, 10), the energy loss profile differs slightly from hitting
+emulsion first.
+
+%===================================================================
+\section{Microscope scanning (Sec.~5--6 in the Finalreport)}
+%===================================================================
+
+\subsection{Olympus BX63}
+
+An automated microscope that scans each plate in a raster pattern,
+taking thousands of images and stitching them into one large mosaic.
+At 4$\times$ magnification:
+\begin{itemize}
+  \item Pixel size: 1.717\,\si{\micro\meter} (Stack 01)
+  \item Scans $\sim$80\% of each plate area
+  \item 2--3 hours per plate
+\end{itemize}
+
+\subsection{Why 4$\times$?}
+
+The Xe beam at 280\,MeV/nucleon produces very large grain clusters
+(high $dE/dx$), so even low magnification is sufficient. The trade-off:
+\begin{itemize}
+  \item Lower magnification = larger field of view = faster scanning
+  \item Higher magnification resolves individual grains but takes
+        much longer
+\end{itemize}
+Comparison images at 4$\times$, 20$\times$, 40$\times$ confirm that
+4$\times$ is adequate.
+
+%===================================================================
+\section{ImageJ analysis pipeline (Sec.~6--7 in the Finalreport)}
+%===================================================================
+
+\subsection{Processing steps for each plate}
+
+\begin{enumerate}
+  \item \textbf{Load} the stitched TIFF mosaic
+  \item \textbf{Set scale:} Calibrate pixels to micrometres
+        (Stack 01: 1.717\,px/\si{\micro\meter}; Stacks 02/03:
+        pre-calibrated)
+  \item \textbf{Enhance contrast:} Normalise the histogram
+  \item \textbf{Threshold:} Select dark pixels (grains) --- threshold
+        0--75 on 8-bit greyscale
+  \item \textbf{Convert to mask:} Binary image
+  \item \textbf{Analyze particles:} Detect connected pixel clusters
+        with size 10--1200\,px\textsuperscript{2}
+  \item \textbf{Export:} Save results CSV with area, perimeter,
+        circularity, position, etc.
+\end{enumerate}
+
+\subsection{What we measure for each grain cluster}
+
+\begin{itemize}
+  \item \textbf{Area} --- proportional to $dE/dx$ of the parent particle
+  \item \textbf{Circularity} ($4\pi A/P^2$) --- checks if objects are
+        compact grains or irregular debris
+  \item \textbf{Position} (X, Y) --- for beam profile analysis
+\end{itemize}
+
+\subsection{Scanner calibration note}
+
+Stack 01 raw values are in pixel units; the analysis script divides
+Area by $1.717^2$ to convert to \si{\micro\meter\squared}.
+Stacks 02/03 are pre-calibrated --- raw values are already in
+micrometres. This is visible in the CSV column names
+(\texttt{Avg\_Area\_um2}).
+
+%===================================================================
+\section{Bragg curve and results (Sec.~9--11 in the Finalreport)}
+%===================================================================
+
+\subsection{Key computed quantities per plate}
+
+\begin{align}
+\text{Track density:}\quad &
+\rho_i = \frac{N_i}{A_i} \quad \text{(grains per mm\textsuperscript{2})}\\
+\text{Mean grain area:}\quad &
+\bar{a}_i = \frac{1}{N_i}\sum_{j=1}^{N_i} a_{ij} \quad
+\text{(\si{\micro\meter\squared})}\\
+\text{Energy deposition fraction:}\quad &
+\varepsilon_i = \frac{1}{A_i}\sum_{j=1}^{N_i} a_{ij}
+\quad \text{(proxy for $dE/dx$)}
+\end{align}
+
+\subsection{Bragg peak}
+
+The Bragg peak is where the beam stops --- maximum energy loss
+($dE/dx$) just before zero velocity. In the data:
+
+\begin{itemize}
+  \item Track density drops by 14--15$\times$ at the Bragg peak
+  \item Stack 01: 8--10\,mm depth
+  \item Stacks 02/03: 10--12\,mm depth
+  \item The drop is sharp, characteristic of heavy-ion stopping
+\end{itemize}
+
+The $dE/dx$ plot (fractional grain area vs depth) shows the
+characteristic Bragg curve shape: gradual rise, sharp peak,
+rapid fall.
+
+\subsection{Why the difference between stacks?}
+
+Stack 01 peaks $\sim$2\,mm earlier than Stacks 02/03. Possible
+explanations:
+\begin{enumerate}
+  \item Slightly different beam energy between irradiation sessions
+        (magnetic field calibration)
+  \item Different plate orientations (emulsion upstream vs downstream)
+  \item Different glass thickness in some plates
+\end{enumerate}
+
+%===================================================================
+\section{Gaussian Mixture Model (GMM) classification (Sec.~10 in the Finalreport)}
+%===================================================================
+
+\subsection{What is GMM?}
+
+Gaussian Mixture Model is an unsupervised machine learning algorithm.
+It assumes the data comes from a mixture of several Gaussian
+distributions and finds the most likely parameters. Here we fit 3
+Gaussians to the $\log_{10}(\text{grain area})$ distribution per plate.
+
+\subsection{Why $\log_{10}$?}
+
+Grain areas span a wide range ($\sim$10--1000+
+\si{\micro\meter\squared}), so logarithm makes the distribution easier
+to model with Gaussians.
+
+\subsection{The three classes}
+
+To ensure consistent labelling across plates, the fitted means are
+sorted in ascending order and re-indexed:
+
+\begin{enumerate}
+  \item \textbf{Class 0 (smallest grains, $\sim$12--50 \si{\micro\meter\squared}):}
+        \begin{itemize}
+          \item Light fragments: protons, alphas, Li, Be, B
+                (Z $\approx$ 1--5)
+          \item Low $dE/dx$, so small grain clusters
+          \item Dominate after the Bragg peak (long-range fragments)
+        \end{itemize}
+
+  \item \textbf{Class 1 (medium grains, $\sim$40--180 \si{\micro\meter\squared}):}
+        \begin{itemize}
+          \item Mid-mass fragments (Z $\approx$ 6--30)
+          \item Produced by abrasion of the projectile nucleus
+          \item Dominate in the middle plates
+        \end{itemize}
+
+  \item \textbf{Class 2 (largest grains, $\sim$180--700+ \si{\micro\meter\squared}):}
+        \begin{itemize}
+          \item Primary \textsuperscript{124}Xe and heavy residues
+                (Z $\approx$ 30--54)
+          \item Highest $dE/dx$ $\rightarrow$ largest grains
+          \item Fraction peaks at the Bragg peak
+        \end{itemize}
+\end{enumerate}
+
+\subsection{Physical picture (abrasion-ablation model)}
+
+As the Xe nucleus travels through the emulsion, it undergoes
+peripheral nuclear collisions:
+\begin{enumerate}
+  \item \textbf{Abrasion:} The ``edges'' of the projectile nucleus are
+        sheared off, producing light and mid-mass fragments.
+  \item \textbf{Ablation:} The remaining excited ``prefragment''
+        evaporates additional nucleons.
+\end{enumerate}
+This produces a spectrum of fragments from single nucleons to
+near-projectile residues, which we see as the three GMM classes.
+
+\subsection{Per-cycle normalisation}
+
+Comparing stacks with different exposure cycles:
+\[
+\rho_{\text{cycle}} = \frac{\rho}{n_{\text{cycles}}}
+\]
+
+Results: Stack 01 highest instantaneous intensity (605/mm\textsuperscript{2}/cycle),
+Stack 02 lowest (188/mm\textsuperscript{2}/cycle), Stack 03 in between
+(248/mm\textsuperscript{2}/cycle).
+
+%===================================================================
+\section{Beam profile analysis (Sec.~10 in the Finalreport)}
+%===================================================================
+
+The lateral distribution of grains in each plate reveals the beam
+shape. 13 diagnostic plots are generated per plate (example shown
+for Stack 02, Plate 1):
+
+\begin{enumerate}
+  \item \textbf{Area distribution} (histogram of grain areas)
+  \item \textbf{Feret diameter distribution} (effective diameter)
+  \item \textbf{Circularity/Roundness} (grain shape quality)
+  \item \textbf{2D density heatmap} (spatial distribution)
+  \item \textbf{2D scatter plot} (every grain as a dot)
+  \item \textbf{Radial density profile} (Gaussian-like fall-off)
+  \item \textbf{Differential flux} ($dN/dA$ vs area)
+  \item \textbf{Cumulative count} (\% vs area)
+  \item \textbf{Local fluence map} (10$\times$10 grid counts)
+  \item \textbf{Horizontal slit profile} (X projection)
+  \item \textbf{Vertical slit profile} (Y projection)
+  \item \textbf{XY profile comparison} (roundness check)
+\end{enumerate}
+
+\subsection{Key findings}
+
+\begin{itemize}
+  \item Beam spot is approximately Gaussian, FWHM $\sim$10--15\,mm
+  \item Round and symmetric (X and Y profiles match)
+  \item No hot spots, shadows, or edge effects
+  \item Consistent across all three stacks
+\end{itemize}
+
+%===================================================================
+\section{SRIM simulation (Sec.~4 in the Finalreport)}
+%===================================================================
+
+SRIM-2013 was used to simulate the stopping of
+\textsuperscript{124}Xe in a 10-plate emulsion--glass stack at the
+correct experimental energy (280\,MeV/nucleon).
+
+\subsection{Setup}
+\begin{itemize}
+  \item 10 plates: 60\,\si{\micro\meter} Ilford G\_5 emulsion +
+        2\,mm glass Soda\_Lime (total 20.6\,mm)
+  \item Emulsion composition: Ag (49\%), Br (36\%), C (7\%), O (7\%),
+        H (1\%) by weight, density \SI{3.907}{\g\per\cm\cubed}
+  \item Glass: O (60\%), Si (25\%), Na (10\%), Ca (3\%), Mg (1\%),
+        Al (1\%) by weight, density \SI{2.330}{\g\per\cm\cubed}
+\end{itemize}
+
+\subsection{Key results}
+\begin{itemize}
+  \item \textbf{Range:} 11.55\,mm (ion stops at end of plate~6)
+  \item \textbf{Bragg peak:} 5505\,MeV/mm at 8.30\,mm depth
+  \item \textbf{Peak-to-surface ratio:} $\sim$2.0
+\end{itemize}
+
+\subsection{Energy budget}
+Most of the beam energy is deposited in plates~2--5:
+Plate 1: 4669\,MeV, Plate 2: 5183\,MeV, Plate 3: 5987\,MeV,
+Plate 4: 7585\,MeV, Plate 5: 8467\,MeV (Bragg peak), Plate 6: 2831\,MeV
+(stop). Plates 7--10 receive no primary energy.
+
+\subsection{Comparison with experiment}
+The SRIM-predicted Bragg peak at 8--10\,mm is consistent with the
+experimental 10--12\,mm for Stack\,03. The agreement in the rise slope
+(plates 1--5) supports SRIM stopping power as a valid model.
+
+%===================================================================
+\section{Geant4 simulation (Sec.~4 in the Finalreport)}
+%===================================================================
+
+\subsection{Why Geant4?}
+
+SRIM models only electromagnetic stopping. Geant4 adds:
+\begin{itemize}
+  \item Nuclear fragmentation (production of secondary fragments)
+  \item Full 3D geometry with complex layer structures
+  \item Event-by-event physics with the \texttt{FTFP\_BERT} physics list
+\end{itemize}
+
+\subsection{Simulation setup}
+
+\subsubsection*{Geometry}
+\begin{itemize}
+  \item 10 plates, each: 60\,\si{\micro\meter} emulsion + 2\,mm glass
+  \item $40 \times 40$\,mm\textsuperscript{2} lateral size
+  \item Alternating orientation: E$|$G, G$|$E, E$|$G, G$|$E, ...
+  \item Beam enters from the top (positive Z), travels downward (-Z)
+\end{itemize}
+
+\subsubsection*{Beam}
+\begin{itemize}
+  \item \textsuperscript{124}Xe (Z=54, A=124)
+  \item 280\,MeV/nucleon $\times$ 124 = 34.72\,GeV total kinetic energy
+  \item 1000 events
+  \item Normal incidence, centred on stack
+\end{itemize}
+
+\subsubsection*{Physics list}
+\texttt{FTFP\_BERT}: Combines Fritiof (FTF) model for high-energy
+hadronic interactions + Bertini cascade for low-energy hadronic
+interactions + standard electromagnetic physics.
+
+\subsubsection*{Scoring}
+Custom \texttt{SteppingAction} records energy deposition per step per
+layer. \texttt{EventAction} accumulates per-event sums.
+\texttt{RunAction} writes the final average to CSV.
+
+\subsection{Simulation results}
+
+\begin{itemize}
+  \item \textbf{Bragg peak:} 9.3\,mm from entrance
+  \item \textbf{Peak dE/dx:} 5733\,MeV/mm (glass), 4969\,MeV/mm (emulsion)
+  \item \textbf{Total deposited:} 33,630\,MeV = 96.9\% of input
+  \item \textbf{3.1\% escapes} as secondary particles (neutrons,
+        gammas, fragments)
+  \item \textbf{Fragment tail:} $\sim$400\,MeV deposited past the
+        Bragg peak from light secondary fragments
+\end{itemize}
+
+\subsection{Comparison with experiment}
+
+\begin{itemize}
+  \item Geant4 peak at 9.3\,mm lies between Stack 01 (8--10\,mm)
+        and Stacks 02/03 (10--12\,mm)
+  \item Consistent with $\pm$5--10\% beam energy uncertainty
+  \item Normalised dE/dx curves agree well in shape
+  \item Fragment tail past the peak resembles experimental
+        post-peak activity
+\end{itemize}
+
+\subsection{Why 96.9\% and not 100\%?}
+
+At 280\,MeV/nucleon, the Xe nucleus can undergo nuclear interactions
+(fragmentation) in addition to electromagnetic stopping. When it
+fragments:
+\begin{itemize}
+  \item Some energy goes into nuclear binding (not visible as
+        ionization)
+  \item Neutrons escape without depositing energy (they're neutral)
+  \item Gamma rays from de-excitation escape
+  \item Some fragments exit the stack volume
+\end{itemize}
+The 96.9\% deposition fraction is physically reasonable.
+
+%===================================================================
+\section{How to explain the key figures}
+%===================================================================
+
+\subsection{Figure: Bragg peak overview (bragg\_peak\_overview.png)}
+
+Four panels:
+\begin{itemize}
+  \item \textbf{Top-left:} Track density vs depth --- shows the sharp
+        drop at the Bragg peak where the beam stops.
+  \item \textbf{Top-right:} Energy deposition fraction vs depth ---
+        peaks just before the density drop.
+  \item \textbf{Bottom-left:} Average grain area vs depth --- increases
+        as the beam slows (higher $dE/dx$), drops after the peak.
+  \item \textbf{Bottom-right:} Stack configuration summary.
+\end{itemize}
+
+\subsection{Figure: SRIM Bragg curve (srim\_10plate\_bragg.png)}
+
+Two panels:
+\begin{itemize}
+  \item \textbf{Top:} $dE/dx$ vs depth --- red = emulsion, blue = glass.
+        Shows the Bragg peak at 8.30\,mm (5505\,MeV/mm).
+  \item \textbf{Bottom:} Remaining kinetic energy vs depth --- the ion
+        stops at 11.55\,mm (end of plate~6).
+  \item Dashed vertical lines mark the plate boundaries.
+\end{itemize}
+
+\subsection{Figure: SRIM vs experiment (srim\_vs\_exp.png)}
+
+Overlay of normalised SRIM-simulated Bragg curve with experimental
+data from Stack\,03 (best statistics). Both curves are normalised to
+their maxima. The agreement in the rise slope (plates 1--5) is good.
+
+\subsection{Figure: dE/dx (bragg\_dedx.png)}
+
+Three panels, one per stack. The y-axis is the ``energy deposition
+fraction'' (grain area / scan area), which is a proxy for $dE/dx$.
+Point out:
+\begin{itemize}
+  \item Stack 01 peak at 8--10\,mm
+  \item Stacks 02/03 peak at 10--12\,mm
+  \item The characteristic Bragg curve shape
+\end{itemize}
+
+\subsection{Figure: GMM classes}
+
+Shows how the three particle populations evolve with depth.
+Explain:
+\begin{itemize}
+  \item Class 0 (light fragments) dominates AFTER the Bragg peak
+        --- long-range survivors
+  \item Class 2 (heavy/primary) peaks AT the Bragg peak
+  \item Class 1 (mid-mass) dominates mid-stack
+  \item This follows the abrasion-ablation model
+\end{itemize}
+
+\subsection{Figure: Geant4 Bragg curve (analysis/geant4/build/geant4\_bragg.png)}
+
+Four panels:
+\begin{itemize}
+  \item \textbf{Top-left:} dE/dx vs depth in absolute units (MeV/mm)
+        --- shows both emulsion and glass contributions
+  \item \textbf{Top-right:} Energy per layer --- glass dominates
+        because it's 33$\times$ thicker
+  \item \textbf{Bottom-left:} Normalised curve --- shape comparison
+  \item \textbf{Bottom-right:} Cumulative energy --- all 34.7\,GeV
+        accounted for
+\end{itemize}
+
+\subsection{Figure: Simulation vs experiment
+(analysis/geant4/build/geant4\_vs\_experiment.png)}
+
+\begin{itemize}
+  \item \textbf{Left panel:} All experimental curves normalised and
+        overlaid with Geant4. The shapes match well.
+  \item \textbf{Right panel:} Absolute comparison for Stack 03
+        (best statistics). Dual y-axes show different scales but
+        similar trends.
+\end{itemize}
+
+\subsection{Figure: 3D render (analysis/geant4/build/geant4\_render.png)}
+
+Shows the stack geometry with trajectories. Red lines = Xe ion
+paths. Point out:
+\begin{itemize}
+  \item Beam enters from top (positive Z)
+  \item Trajectories stop at the Bragg peak (bundle of red lines
+        terminating at $\sim$9\,mm depth)
+  \item No trajectories pass through the entire stack
+  \item Alternating blue (emulsion) and gray (glass) layers
+\end{itemize}
+
+%===================================================================
+\section{Key numbers to remember}
+%===================================================================
+
+\begin{tabular}{lcc}
+\toprule
+Quantity & Value & Notes \\
+\midrule
+Ion & \textsuperscript{124}Xe\textsuperscript{+54} \\
+Energy per nucleon & 280\,MeV/nucleon & $\beta \approx 0.63$ \\
+Total kinetic energy & 34.72\,GeV & 280 $\times$ 124 \\
+Emulsion thickness & 60\,\si{\micro\meter} \\
+Glass thickness & 2\,mm \\
+Stack depth & 20.6\,mm & 10 plates \\
+Bragg peak (exp, S01) & 8--10\,mm \\
+Bragg peak (exp, S02/03) & 10--12\,mm \\
+Bragg peak (SRIM) & 8.30\,mm & 5505\,MeV/mm \\
+Range (SRIM) & 11.55\,mm & End of plate~6 \\
+Bragg peak (Geant4) & 9.3\,mm \\
+Peak dE/dx (Geant4) & 5733\,MeV/mm (glass) \\
+Track density drop & 14--15$\times$ & At Bragg peak \\
+GMM classes & 3 & Sorted by mean area \\
+Per-cycle fluence & 188--605\,mm\textsuperscript{-2} & Varies by stack \\
+Beam FWHM & 10--15\,mm & Gaussian profile \\
+Geant4 events & 1000 & FTFP\_BERT physics \\
+Energy deposited (sim) & 96.9\% & 3.1\% escapes \\
+\bottomrule
+\end{tabular}
+
+%===================================================================
+\section{Potential presentation questions and answers}
+%===================================================================
+
+\subsection*{Q: Why did you use nuclear emulsion instead of an
+electronic detector?}
+A: Emulsion provides sub-micrometre spatial resolution and integrates
+passively over the entire exposure. It's ideal for measuring ranges
+and fragmentation of heavy ions at these energies. No power or
+readout is needed during irradiation.
+
+\subsection*{Q: How do you know the grain area is proportional to
+$dE/dx$?}
+A: The developed silver grain size is proportional to the energy
+deposited in the AgBr crystal along the particle's path. This is a
+well-established property of nuclear emulsion: higher $dE/dx$
+$\rightarrow$ more developed silver $\rightarrow$ larger grain area.
+
+\subsection*{Q: Why did you use 4$\times$ magnification?}
+A: The Xe beam at 280\,MeV/nucleon has very high $dE/dx$, producing
+large grain clusters even at low magnification. We verified this by
+comparing 4$\times$, 20$\times$, and 40$\times$ images. 4$\times$
+allows scanning an entire plate in 2--3 hours instead of days.
+
+\subsection*{Q: Why three GMM classes?}
+A: Physically, we expect three populations: light fragments (Z 1--5),
+mid-mass fragments (Z 6--30), and heavy residues/primary beam
+(Z 30--54). The GMM with 3 components finds these naturally. With 2
+components we lose the mid-mass class; with 4 the extra component
+splits one of the physical classes.
+
+\subsection*{Q: Why does the Bragg peak position differ between
+stacks?}
+A: Most likely the beam energy varied slightly between the three
+irradiation sessions (magnetic field uncertainty). The plate
+orientation (emulsion vs glass facing the beam) and possible
+glass thickness variations also contribute.
+
+\subsection*{Q: Why did you need Geant4 if you already had SRIM?}
+A: Both SRIM and Geant4 were run at the correct energy
+(280\,MeV/nucleon). SRIM gives a quick Bragg curve estimate (range
+11.55\,mm, peak at 8.30\,mm) but only models electromagnetic
+stopping. Geant4 adds nuclear fragmentation physics, showing that
+3.1\% of the energy escapes as secondary particles --- something
+SRIM cannot predict. The Geant4 peak (9.3\,mm) lies between the
+two experimental values, consistent with beam energy uncertainty.
+
+\subsection*{Q: Why does Geant4 show only 96.9\% energy deposition?}
+A: At 280\,MeV/nucleon, nuclear interactions produce secondary
+particles (neutrons, gammas) that can escape the stack without
+depositing energy. 3.1\% energy loss to escaping secondaries is
+physically reasonable.
+
+\subsection*{Q: What is the alternating plate orientation?}
+A: The plates in the stack are arranged such that the order of
+layers alternates: even-numbered plates have emulsion then glass
+(E$|$G), odd-numbered plates have glass then emulsion (G$|$E).
+This matches the experimental stack configuration.
+
+\subsection*{Q: What is the practical application of this work?}
+A: The characterised Xe beam can be used for:
+\begin{itemize}
+  \item Radiation hardness testing of electronics (simulating space
+        radiation environment)
+  \item Benchmarking treatment planning codes for hadron therapy
+  \item Nuclear fragmentation studies for space radiation shielding
+  \item Calibrating nuclear emulsion for future NICA experiments
+\end{itemize}
+
+%===================================================================
+\section{Common mistakes to avoid in presentations}
+%===================================================================
+
+\begin{enumerate}
+  \item \textbf{Don't say ``SRIM range was 16\,µm.''} The new
+        SRIM run at 280\,MeV/nucleon gives range 11.55\,mm, which is
+        consistent with the experiment. Always specify which SRIM
+        run you are referring to.
+  \item \textbf{Don't confuse total energy with energy per nucleon.}
+        280\,MeV/nucleon $\times$ 124 = 34.7\,GeV total. Always
+        specify which one you mean.
+  \item \textbf{Don't say ``dE/dx'' when showing grain area.} The
+        grain area is a \emph{proxy} for $dE/dx$, proportional to
+        energy loss but not in absolute units (MeV/mm). Say ``energy
+        deposition fraction, proportional to $dE/dx$.''
+  \item \textbf{Pixel vs micrometre:} Stack 01 raw values are in
+        pixel units; Stacks 02/03 in micrometres. The analysis
+        converts Stack 01 by dividing by $1.717^2$.
+  \item \textbf{Stack numbering:} Stack 01 has 8 plates, Stacks 02/03
+        have 10. The plate naming conventions differ between stacks.
+\end{enumerate}
+
+\end{document}
